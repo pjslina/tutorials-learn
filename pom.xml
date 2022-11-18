@@ -11,6 +11,7 @@
     <modules>
         <module>parent-boot-2</module>
         <module>spring-aop</module>
+        <module>spring-aop-2</module>
     </modules>
 
     <properties>
