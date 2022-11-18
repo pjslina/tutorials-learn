@@ -1,0 +1,8 @@
+<aspectj>
+    <aspects>
+        <aspect name="com.panjin.aspectj.SecuredMethodAspect"/>
+        <weaver options="-verbose -showWeaveInfo">
+            <include within="com.panjin.aspectj.*"/>
+        </weaver>
+    </aspects>
+</aspectj>
