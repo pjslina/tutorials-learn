@@ -18,8 +18,42 @@
 *.zip
 *.tar.gz
 *.rar
-*.iml
-.idea
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+*/bin/*
+bin/
+
+# Eclipse
+.settings/
+*.project
+*.classpath
+.prefs
+*.prefs
+.metadata/
+
+# Intellij
+.idea/
+*.iml
+*.iws
+out/
+
+# VSCode
+.vscode/
+
+# Mac
+.DS_Store
+
+# Maven
+log/*
+target/
+
+# Gradle
+.gradle/
+
+# SDKMan
+.sdkmanrc
+
+# Localstack
+**/.localstack
