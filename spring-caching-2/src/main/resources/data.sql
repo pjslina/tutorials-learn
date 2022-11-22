@@ -1,0 +1,1 @@
+INSERT INTO `ITEM` (id, description) VALUES('abc','ITEM1');

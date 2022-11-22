@@ -9,7 +9,7 @@
         <relativePath>../parent-boot-2</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <name>spring-aop</name>
+    <name>spring-aop-2</name>
     <artifactId>spring-aop-2</artifactId>
 
     <properties>
