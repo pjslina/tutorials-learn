@@ -13,6 +13,9 @@
         <module>spring-aop</module>
         <module>spring-aop-2</module>
         <module>spring-caching-2</module>
+        <module>rabbitmq</module>
+        <module>spring-amqp</module>
+        <module>spring-kafka</module>
     </modules>
 
     <properties>
