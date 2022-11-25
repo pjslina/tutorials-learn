@@ -66,5 +66,7 @@ public class MultipartUpload {
             System.out.println("Error occurred while uploading file");
             e.printStackTrace();
         }
+        // 不调用下面这条语句，开启的线程会waiting
+        tm.shutdownNow();
     }
 }

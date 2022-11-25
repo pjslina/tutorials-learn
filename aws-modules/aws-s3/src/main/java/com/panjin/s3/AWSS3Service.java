@@ -69,12 +69,33 @@ public class AWSS3Service {
     }
 
     /**
+     * uploading object
+     * @param bucketName
+     * @param key
+     * @param content
+     * @return
+     */
+    public PutObjectResult putObject(String bucketName, String key, String content) {
+        return s3client.putObject(bucketName, key, content);
+    }
+
+    /**
      * listing objects
      * @param bucketName
      * @return
      */
     public ObjectListing listObjects(String bucketName) {
         return s3client.listObjects(bucketName);
+    }
+
+    /**
+     * listing objects
+     * @param bucketName
+     * @param prefix
+     * @return
+     */
+    public ObjectListing listObjects(String bucketName, String prefix) {
+        return s3client.listObjects(bucketName, prefix);
     }
 
     /**
