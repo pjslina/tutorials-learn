@@ -7,7 +7,7 @@
           class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basenames">
             <list>
-                <value>dialog/dialog</value>
+                <value>dialog/dialog_en.properties</value>
             </list>
         </property>
     </bean>

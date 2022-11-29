@@ -6,7 +6,7 @@
         <artifactId>parent-spring-5</artifactId>
         <groupId>com.panjin</groupId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../parent-spring-5/pom.xml</relativePath>
+        <relativePath>../../parent-spring-5/pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

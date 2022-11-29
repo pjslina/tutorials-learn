@@ -6,7 +6,7 @@
         <artifactId>parent-boot-2</artifactId>
         <groupId>com.panjin</groupId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../parent-boot-2</relativePath>
+        <relativePath>../../parent-boot-2</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <name>spring-aop</name>

@@ -10,14 +10,13 @@
     <version>1.0.0-SNAPSHOT</version>
     <modules>
         <module>parent-boot-2</module>
-        <module>spring-aop</module>
-        <module>spring-aop-2</module>
         <module>spring-caching-2</module>
         <module>rabbitmq</module>
         <module>spring-amqp</module>
         <module>spring-kafka</module>
         <module>parent-spring-5</module>
         <module>aws-modules</module>
+        <module>spring-module</module>
     </modules>
 
     <properties>
