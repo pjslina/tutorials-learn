@@ -30,6 +30,7 @@
         <mockito.version>4.5.1</mockito.version>
         <commons-io.version>2.11.0</commons-io.version>
         <assertj.version>3.23.1</assertj.version>
+        <lombok.version>1.18.24</lombok.version>
 
         <!-- plugins -->
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
