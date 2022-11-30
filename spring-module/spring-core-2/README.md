@@ -11,6 +11,9 @@ This module contains articles about core Spring functionality
 - [Spring @Primary Annotation](http://www.baeldung.com/spring-primary)
 - [Spring Events](https://www.baeldung.com/spring-events)
 - [Spring Null-Safety Annotations](https://www.baeldung.com/spring-null-safety-annotations)
+- [Guide to the Spring BeanFactory](https://www.baeldung.com/spring-beanfactory)
+- [How to use the Spring FactoryBean?](https://www.baeldung.com/spring-factorybean)
+- [Design Patterns in the Spring Framework](https://www.baeldung.com/spring-framework-design-patterns)
 - More articles: [[<-- prev]](/spring-core)[[next -->]](/spring-core-3)
 
 
