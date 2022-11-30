@@ -1,6 +1,7 @@
 package com.panjin.springevents.synchronous;
 
 /**
+ * 泛型支持
  * @author panjin
  */
 public class GenericSpringEvent<T> {
