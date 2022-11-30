@@ -16,5 +16,6 @@
         <module>spring-aop-2</module>
         <module>spring-core</module>
         <module>spring-core-2</module>
+        <module>spring-jinq</module>
     </modules>
 </project>
