@@ -34,7 +34,7 @@ public class CarRepositoryImpl extends BaseJinqRepositoryImpl<Car> implements Ca
 
     @Override
     public List<Tuple3<String, Integer, String>> findWithModelYearAndEngine() {
-        return stream().select(c -> new Tuple3<>(c.getModel(), c.getYear(), c.getEngine()))
+        return stream().select(c -> new Tuple3<>(c.getModel(), c.getProductYear(), c.getEngine()))
             .toList();
     }
 

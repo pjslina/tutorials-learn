@@ -12,7 +12,7 @@ import javax.persistence.OneToOne;
 public class Car {
     private String model;
     private String description;
-    private int year;
+    private int productYear;
     private String engine;
     private Manufacturer manufacturer;
 
@@ -33,12 +33,12 @@ public class Car {
         this.description = description;
     }
 
-    public int getYear() {
-        return year;
+    public int getProductYear() {
+        return productYear;
     }
 
-    public void setYear(int year) {
-        this.year = year;
+    public void setProductYear(int productYear) {
+        this.productYear = productYear;
     }
 
     public String getEngine() {
