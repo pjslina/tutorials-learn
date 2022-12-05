@@ -17,6 +17,7 @@
         <module>parent-spring-5</module>
         <module>aws-modules</module>
         <module>spring-module</module>
+        <module>spring-boot-module</module>
     </modules>
 
     <properties>

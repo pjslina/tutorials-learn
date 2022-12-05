@@ -38,4 +38,9 @@ public class CarRepositoryIntegrationTest {
     public void whenUsingOneToOneRelationship() {
         assertThat(repository.findManufacturerByModel("model1")).isNotNull();
     }
+
+    @Test
+    public void whenLeftJoin() {
+        assertThat(repository.findCarsPerManufacturer()).isNotNull();
+    }
 }
