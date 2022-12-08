@@ -11,6 +11,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>spring-boot-persistence</module>
+        <module>spring-boot-persistence-2</module>
     </modules>
 
     <artifactId>spring-boot-module</artifactId>
