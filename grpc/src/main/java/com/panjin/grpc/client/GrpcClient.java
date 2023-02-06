@@ -1,0 +1,30 @@
+package com.panjin.grpc.client;
+
+import com.panjin.grpc.HelloRequest;
+import com.panjin.grpc.HelloResponse;
+import com.panjin.grpc.HelloServiceGrpc;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+
+/**
+ * @author panjin
+ */
+public class GrpcClient {
+    public static void main(String[] args) throws InterruptedException {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 8080)
+            .usePlaintext()
+            .build();
+
+        HelloServiceGrpc.HelloServiceBlockingStub stub
+          = HelloServiceGrpc.newBlockingStub(channel);
+
+        HelloResponse helloResponse = stub.hello(HelloRequest.newBuilder()
+            .setFirstName("PanJin")
+            .setLastName("gRPC")
+            .build());
+
+        System.out.println("Response received from server:\n" + helloResponse);
+
+        channel.shutdown();
+    }
+}
