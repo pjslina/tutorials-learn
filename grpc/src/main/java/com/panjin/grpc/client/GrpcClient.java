@@ -12,7 +12,9 @@ import io.grpc.ManagedChannelBuilder;
 public class GrpcClient {
     public static void main(String[] args) throws InterruptedException {
         ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 8080)
-            .usePlaintext()
+                // 下面的重试设置，不对整个channel生效，重试需要通过ServiceConfig去配置
+                .enableRetry().maxRetryAttempts(3)
+                .usePlaintext()
             .build();
 
         HelloServiceGrpc.HelloServiceBlockingStub stub

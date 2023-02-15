@@ -19,6 +19,7 @@
         <module>spring-module</module>
         <module>spring-boot-module</module>
         <module>grpc</module>
+        <module>persistence-modules</module>
     </modules>
 
     <properties>
@@ -36,6 +37,8 @@
         <!-- logging -->
         <org.slf4j.version>1.7.36</org.slf4j.version>
         <logback.version>1.2.11</logback.version>
+
+        <h2.version>2.1.214</h2.version>
 
         <!-- plugins -->
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
