@@ -1,0 +1,10 @@
+2023-02-16 11:05:29 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]<span style=""color: #ff0000"">table_one</span> (\000a  id numeric primary key\000a)"; expected "identifier"; SQL statement:
+create table <span style="color: #ff0000">table_one</span> (
+  id numeric primary key
+) [42001-210]
+2023-02-16 11:21:24 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]<span style=""color: #ff0000"">table_one</span> (\000a  id numeric primary key\000a)"; expected "identifier"; SQL statement:
+create table <span style="color: #ff0000">table_one</span> (
+  id numeric primary key
+) [42001-210]
