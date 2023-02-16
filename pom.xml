@@ -20,6 +20,7 @@
         <module>spring-boot-module</module>
         <module>grpc</module>
         <module>persistence-modules</module>
+        <module>parent-java</module>
     </modules>
 
     <properties>
@@ -39,6 +40,9 @@
         <logback.version>1.2.11</logback.version>
 
         <h2.version>2.1.214</h2.version>
+        <guava.version>31.1-jre</guava.version>
+        <jmh-core.version>1.36</jmh-core.version>
+        <jmh-generator.version>1.36</jmh-generator.version>
 
         <!-- plugins -->
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
