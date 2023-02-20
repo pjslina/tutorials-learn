@@ -17,5 +17,6 @@
         <module>spring-core</module>
         <module>spring-core-2</module>
         <module>spring-jinq</module>
+        <module>spring-apache-camel</module>
     </modules>
 </project>
