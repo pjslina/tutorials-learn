@@ -3,15 +3,19 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>tutorials-learn</artifactId>
+        <artifactId>parent-boot-2</artifactId>
         <groupId>com.panjin</groupId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../parent-boot-2</relativePath>
     </parent>
+    <groupId>com.panjin.spring-boot-modules</groupId>
     <modelVersion>4.0.0</modelVersion>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
         <module>spring-boot-persistence</module>
         <module>spring-boot-persistence-2</module>
+        <module>spring-boot-camel</module>
     </modules>
 
     <artifactId>spring-boot-module</artifactId>
