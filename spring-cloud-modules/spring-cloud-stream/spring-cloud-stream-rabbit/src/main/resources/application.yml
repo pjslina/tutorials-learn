@@ -1,0 +1,29 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        input:
+          destination: queue.log.messages
+          binder: local_rabbit
+          group: logMessageConsumers
+        output:
+          destination: queue.pretty.log.messages
+          binder: local_rabbit
+      binders:
+        local_rabbit:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: 192.168.16.101
+                port: 5672
+                username: root
+                password: 123456
+                virtual-host: /
+
+server:
+  port: 0
+management:
+  health:
+    binders:
+       enabled: true

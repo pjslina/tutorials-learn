@@ -21,6 +21,7 @@
         <module>grpc</module>
         <module>persistence-modules</module>
         <module>parent-java</module>
+        <module>spring-cloud-modules</module>
     </modules>
 
     <properties>
