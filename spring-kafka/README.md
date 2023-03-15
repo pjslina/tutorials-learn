@@ -22,6 +22,10 @@ As Kafka topics are not created automatically by default, this application requi
 `$ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic filtered`<br>
 `$ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic greeting`<br>
 
+kafka3.0创建topic不依赖于zookeeper，也可以通过编程方式创建
+`$ bin/kafka-topics.sh  --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic mytopic`<br>
+`$ bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic mytopic`<br>
+
 When the application runs successfully, following output is logged on to console (along with spring logs):
 
 #### Message received from the 'baeldung' topic by the basic listeners with groups foo and bar
