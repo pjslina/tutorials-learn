@@ -1,0 +1,6 @@
+spring:
+  messages:
+    basename: messages
+    encoding: UTF-8
+  application:
+    name: spring-boot-i18n

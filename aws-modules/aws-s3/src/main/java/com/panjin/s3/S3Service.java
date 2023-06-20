@@ -50,7 +50,7 @@ public class S3Service {
     public String getFile(String bucketName, String key) {
         String result = "";
         S3Object object = s3client.getObject(bucketName, key);
-        S3ObjectInputStream objectContent = objectContent = object.getObjectContent();
+//        S3ObjectInputStream objectContent = objectContent = object.getObjectContent();
         ByteArrayOutputStream os = null;
         try {
             os = new ByteArrayOutputStream();
@@ -166,6 +166,21 @@ public class S3Service {
             path += slash;
         }
         return path;
+    }
+
+    public List<String> getAllKeys(String bucketName) {
+        final ListObjectsV2Request req = new ListObjectsV2Request().withBucketName(bucketName);
+        List<String> keys = new ArrayList<>();
+        ListObjectsV2Result result;
+        do {
+            result = s3client.listObjectsV2(req);
+            for (S3ObjectSummary objectSummary : result.getObjectSummaries()) {
+                keys.add(objectSummary.getKey());
+            }
+            req.setContinuationToken(result.getNextContinuationToken());
+        } while (result.isTruncated());
+
+        return keys;
     }
 
 }

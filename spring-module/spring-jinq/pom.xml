@@ -14,6 +14,7 @@
 
     <properties>
         <jinq.version>1.8.35</jinq.version>
+        <start-class>com.panjin.spring.jinq.JinqApplication</start-class>
     </properties>
 
     <dependencies>

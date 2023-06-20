@@ -22,6 +22,8 @@
         <module>persistence-modules</module>
         <module>parent-java</module>
         <module>spring-cloud-modules</module>
+        <module>java-module</module>
+        <module>spring-boot-module/spring-boot-i18n</module>
     </modules>
 
     <properties>

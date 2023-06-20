@@ -1,0 +1,4 @@
+{
+  "a.b.c" : "hello world, {0}, {1}",
+  "a.b.d" : "Welcome to {0}!"
+}

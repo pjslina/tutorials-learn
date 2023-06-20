@@ -13,7 +13,7 @@
     <artifactId>aws-s3</artifactId>
 
     <properties>
-        <aws-java-sdk.version>1.12.296</aws-java-sdk.version>
+        <aws-java-sdk.version>1.12.429</aws-java-sdk.version>
     </properties>
 
     <dependencies>

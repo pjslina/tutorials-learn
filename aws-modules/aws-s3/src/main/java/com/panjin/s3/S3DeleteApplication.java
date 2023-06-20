@@ -58,9 +58,19 @@ public class S3DeleteApplication {
 //        s3Service.createDir(bucketName, "/a/b/c");
 //        s3Service.deleteDir(bucketName, "/a/b/");
 //        s3Service.deleteDirOfAll(bucketName, "/a/b");
+//        s3Service.deleteDirOfAll(bucketName, "/");
 
-//        s3Service.createFile(bucketName, "/1/需求 管理.xlsx", new File("C:\\Users\\panjin\\Downloads\\需求 管理.xlsx"));
-        String file = s3Service.getFile(bucketName, "/1/需求 管理.xlsx");
+//        s3Service.createFile(bucketName, "a/b/c/hello.txt", new File("C:\\Users\\panjin\\Downloads\\hello.txt"));
+//        s3Service.createFile(bucketName, "/a/b/c/hello.txt", new File("C:\\Users\\panjin\\Downloads\\hello.txt"));
+        String file = s3Service.getFile(bucketName, "/a/b/c/hello.txt");
+        System.out.println("*********************" + file);
+
+//        System.out.println("*********************" + s3Service.exist(bucketName, "/a/b/c/hello.txt"));
+//        System.out.println("*********************" + s3Service.exist(bucketName, "/a"));
+//        System.out.println("*********************" + s3Service.exist(bucketName, "/a/b"));
+//        System.out.println("*********************" + s3Service.exist(bucketName, "/a/b/c"));
+
+        System.out.println("*********************" + s3Service.getAllKeys(bucketName));
     }
 
     private static void deleteOperate(AWSS3Service awsService) {
