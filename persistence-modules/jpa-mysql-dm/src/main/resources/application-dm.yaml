@@ -1,0 +1,10 @@
+db:
+  url: jdbc:dm://192.168.10.143:5236?schema=DEV
+  username: DEV
+  password: KM0iLjgiXP_cH0VOidso
+  driver: dm.jdbc.driver.DmDriver
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.DmDialect

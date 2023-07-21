@@ -16,6 +16,8 @@
     <properties>
         <spring-boot.version>2.7.3</spring-boot.version>
         <rest-assured.version>3.3.0</rest-assured.version>
+        <nimbusds.sdk.version>10.11</nimbusds.sdk.version>
+        <dm.version>8.1.2.192</dm.version>
     </properties>
 
     <dependencies>
@@ -40,6 +42,21 @@
                 <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>oauth2-oidc-sdk</artifactId>
+                <version>${nimbusds.sdk.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.dameng</groupId>
+                <artifactId>DmJdbcDriver18</artifactId>
+                <version>${dm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.dameng</groupId>
+                <artifactId>DmDialect-for-hibernate5.6</artifactId>
+                <version>${dm.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

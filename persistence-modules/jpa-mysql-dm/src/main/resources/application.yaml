@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: jpa-mysql-dm
+  profiles:
+    active: @spring.profiles.active@
+  datasource:
+    driver-class-name: ${db.driver}
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
+  jpa:
+    hibernate:
+#      ddl-auto: update
+      ddl-auto: create-drop
+    show-sql: true
