@@ -6,6 +6,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * @author panjin
  */
@@ -31,13 +33,21 @@ public class LocaleConfig {
 //        return new ObjectMapper();
 //    }
 
-    @Bean
-    public MessageSource messageSource(ObjectMapper objectMapper) {
-        return new JsonMessageSource3(objectMapper);
-    }
+
+//    @Bean
+//    public MessageSource messageSource(ObjectMapper objectMapper) {
+//        return new JsonMessageSource3(objectMapper);
+//    }
 
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper().configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+    }
+
+    @Bean
+    public MessageSource messageSource(ObjectMapper objectMapper) {
+        JsonMessageSource4 messageSource = new JsonMessageSource4("messages-xxx", objectMapper);
+        messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
+        return messageSource;
     }
 }

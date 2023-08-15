@@ -1,0 +1,10 @@
+{
+  "a" : {
+    "b" : {
+      "c" : "hello world, {0}, {1}",
+      "d" : "Welcome to {0}!"
+    }
+  },
+  "b.d" : "hello world 2, {0}, {1}",
+  "a.b.d" : "Welcome to 2 {0}!"
+}

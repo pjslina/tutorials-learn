@@ -43,7 +43,7 @@ public class JsonMessageSource2 extends AbstractResourceBasedMessageSource {
 
     private void loadMessages(String baseName) {
         try {
-            // 加载语言资源文件
+            // 加载语言资源文件，这里只能用en_US，不能用en-US，因为Locale的构造函数中，如果传入的字符串包含"-"，则会报错
             messages.put("en_US", loadMessagesForLanguage(baseName + "_" + "en_US"));
             messages.put("zh_CN", loadMessagesForLanguage(baseName + "_" + "zh_CN"));
             // 添加更多的语言资源文件
