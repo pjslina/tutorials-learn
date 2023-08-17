@@ -24,6 +24,7 @@
         <module>spring-cloud-modules</module>
         <module>java-module</module>
         <module>spring-boot-module/spring-boot-i18n</module>
+        <module>spring-security-modules</module>
     </modules>
 
     <properties>
