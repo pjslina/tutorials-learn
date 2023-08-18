@@ -24,6 +24,12 @@ public class SecurityConfig {
         return authenticator;
     }
 
+    /**
+     * new InetOrgPersonContextMapper(), 获取的对象信息更详细
+     * 配置LdapAuthenticationProvider
+     * @param authenticator BindAuthenticator
+     * @return LdapAuthenticationProvider
+     */
     @Bean
     LdapAuthenticationProvider authenticationProvider(LdapAuthenticator authenticator) {
         LdapAuthenticationProvider provider = new LdapAuthenticationProvider(authenticator);
@@ -35,6 +41,7 @@ public class SecurityConfig {
      * 配置Spring Security的FilterChain
      * 如果不配置，就使用spring security默认的登录页面
      * 如果不配置，所有的接口都需要登录才能访问
+     * 这里修改了默认的登录接口为/api/login
      * @param http HttpSecurity
      * @return SecurityFilterChain
      * @throws Exception Exception
@@ -48,6 +55,7 @@ public class SecurityConfig {
                 .authenticated()
                 .and()
                 .formLogin()
+                .loginProcessingUrl("/api/login")
                 .loginPage("/login")
                 .permitAll()
                 .and()

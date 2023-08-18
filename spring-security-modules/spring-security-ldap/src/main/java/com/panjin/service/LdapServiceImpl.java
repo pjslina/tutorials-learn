@@ -47,7 +47,7 @@ public class LdapServiceImpl implements ILdapService {
 
         // 2. 创建密码
         String newQuotedPassword = "\"" + newPassword + "\"";
-        byte[] newUnicodePassword = new byte[0];
+        byte[] newUnicodePassword;
         try {
             newUnicodePassword = newQuotedPassword.getBytes("UTF-16LE");
         } catch (UnsupportedEncodingException e) {
