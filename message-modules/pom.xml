@@ -16,6 +16,7 @@
         <module>apache-rocketmq</module>
         <module>rabbitmq</module>
         <module>spring-amqp</module>
+        <module>spring-kafka</module>
     </modules>
 
 </project>

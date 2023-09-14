@@ -44,3 +44,7 @@ Received Message: Hello To Partioned Topic! from partition: 3
 
 #### Message (Serialized Java Object) received from the 'greeting' topic
 >Received greeting message: Greetings, World!!
+> 
+> https://github.com/spring-projects/spring-kafka
+
+注意：使用docker-compose生成的broker，也就是主机名称（对应为容器ID），要配置到host里面去，如果不配置，会导致IPv6解析失败

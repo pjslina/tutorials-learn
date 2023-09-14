@@ -106,8 +106,7 @@ public class KafkaApplication {
         public void sendMessage(String message) {
 
             ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topicName, message);
-
-            future.addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
+            future.addCallback(new ListenableFutureCallback<>() {
 
                 @Override
                 public void onSuccess(SendResult<String, String> result) {

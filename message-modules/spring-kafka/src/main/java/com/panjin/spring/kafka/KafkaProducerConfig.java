@@ -51,4 +51,19 @@ public class KafkaProducerConfig {
     public KafkaTemplate<String, Greeting> greetingKafkaTemplate() {
         return new KafkaTemplate<>(greetingProducerFactory());
     }
+
+    @Bean
+    public ProducerFactory<String, Object> multiTypeProducerFactory() {
+        Map<String, Object> configProps = new HashMap<>();
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        configProps.put(JsonSerializer.TYPE_MAPPINGS, "greeting:com.panjin.spring.kafka.Greeting, farewell:com.panjin.spring.kafka.Farewell");
+        return new DefaultKafkaProducerFactory<>(configProps);
+    }
+
+    @Bean
+    public KafkaTemplate<String, Object> multiTypeKafkaTemplate() {
+        return new KafkaTemplate<>(multiTypeProducerFactory());
+    }
 }
