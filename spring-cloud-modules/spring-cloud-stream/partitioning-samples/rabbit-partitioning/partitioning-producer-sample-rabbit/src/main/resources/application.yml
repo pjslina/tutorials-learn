@@ -1,0 +1,27 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        generate-out-0:
+          destination: partitioned.destination
+          producer:
+            #payload string length - 1 is the partition where it will get stored
+            partition-key-expression: headers['partitionKey'] - 1
+            partition-count: 4
+            required-groups: myGroup #only applicable for rabbit
+      binders:
+        rabbit:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: 192.168.16.101
+                port: 5672
+                username: root
+                password: 123456
+
+# 禁用rabbitMQ健康检查，因为RabbitHealthContributorAutoConfiguration会自动检查rabbitMQ的健康状态，且配置是从spring.rabbitmq中读取的，所以这里禁用
+management:
+  health:
+    rabbit:
+      enabled: false

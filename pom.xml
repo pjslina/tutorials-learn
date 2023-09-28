@@ -24,6 +24,7 @@
         <module>spring-security-modules</module>
         <module>testing-modules</module>
         <module>message-modules</module>
+        <module>libraries-5</module>
     </modules>
 
     <properties>

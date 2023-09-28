@@ -1,0 +1,23 @@
+spring:
+  cloud:
+    stream:
+      kafka:
+        binder:
+          autoAddPartitions: true
+          minPartitionCount: 4
+      bindings:
+        listen-in-0:
+          destination: partitioned.destination
+          group: myGroup
+      binders:
+        kafka:
+          type: kafka
+          environment:
+            spring:
+              cloud:
+                stream:
+                  kafka:
+                    binder:
+                      brokers: 192.168.16.101:9092
+server:
+  port: 8081

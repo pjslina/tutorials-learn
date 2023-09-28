@@ -1,0 +1,18 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        uppercase|echo-in-0:
+          destination: uppercase-in
+      function:
+        definition: uppercase|echo
+      binders:
+        kafka:
+          type: kafka
+          environment:
+            spring:
+              cloud:
+                stream:
+                  kafka:
+                    binder:
+                      brokers: 192.168.16.101:9092

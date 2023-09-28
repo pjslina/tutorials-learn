@@ -1,0 +1,39 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        process-in-0:
+          destination: dataIn
+          binder: kafka
+        process-out-0:
+          destination: dataOut
+          binder: rabbit
+        #Test sink binding (used for testing)
+        sendTestData-out-0:
+          destination: dataIn
+          binder: kafka
+        #Test sink binding (used for testing)
+        receive-in-0:
+          destination: dataOut
+          binder: rabbit
+      function:
+        definition: sendTestData;process;receive
+      binders:
+        kafka:
+          type: kafka
+          environment:
+            spring:
+              cloud:
+                stream:
+                  kafka:
+                    binder:
+                      brokers: 192.168.16.101:9092
+        rabbit:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: 192.168.16.101
+                port: 5672
+                username: root
+                password: 123456

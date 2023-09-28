@@ -1,0 +1,30 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        source1-out-0:
+          destination: test1
+        source2-out-0:
+          destination: test2
+        sink1-in-0:
+          destination: test1
+        sink2-in-0:
+          destination: test2
+      function:
+        definition: source1;source2;sink1;sink2
+      binders:
+        rabbit:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: 192.168.16.101
+                port: 5672
+                username: root
+                password: 123456
+
+# 禁用rabbitMQ健康检查，因为RabbitHealthContributorAutoConfiguration会自动检查rabbitMQ的健康状态，且配置是从spring.rabbitmq中读取的，所以这里禁用
+management:
+  health:
+    rabbit:
+      enabled: false

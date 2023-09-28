@@ -1,0 +1,21 @@
+spring:
+  rabbitmq:
+    username: root
+    password: 123456
+    addresses: 192.168.16.101:5672
+#  kafka:
+#    bootstrap-servers: 192.168.16.101:9092
+#
+#rocketmq:
+#  name-server: 192.168.16.101:9876
+#  producer:
+#    group: my-group
+#    send-message-timeout: 300000
+#    compress-message-body-threshold: 4096
+#    max-message-size: 4194304
+#    retry-times-when-send-async-failed: 0
+#    retry-times-when-send-failed: 2
+#    retry-next-server: true
+
+mq:
+  type: rabbitmq

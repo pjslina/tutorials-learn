@@ -18,6 +18,7 @@
         <module>spring-amqp</module>
         <module>spring-kafka</module>
         <module>spring-kafka-2</module>
+        <module>multi-mq</module>
     </modules>
 
 </project>

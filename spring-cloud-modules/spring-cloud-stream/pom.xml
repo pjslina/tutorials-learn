@@ -11,29 +11,13 @@
     <packaging>pom</packaging>
     <modules>
         <module>spring-cloud-stream-rabbit</module>
+        <module>batch-producer-consumer</module>
+        <module>kafka-binder-native-app</module>
+        <module>multi-binder-samples</module>
+        <module>multi-functions-samples</module>
+        <module>partitioning-samples</module>
     </modules>
     <artifactId>spring-cloud-stream</artifactId>
     <groupId>com.panjin</groupId>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
-                <version>${spring-cloud-stream.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-stream</artifactId>
-                <version>${spring-cloud-stream.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-stream-test-support</artifactId>
-                <version>${spring-cloud-stream.version}</version>
-                <scope>test</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
 </project>
