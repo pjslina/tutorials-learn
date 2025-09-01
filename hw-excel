@@ -1,0 +1,421 @@
+import requests
+import pandas as pd
+import openpyxl
+from openpyxl import Workbook
+import os
+from typing import List, Dict, Any, Optional
+import logging
+from pathlib import Path
+
+
+class HttpToExcelSync:
+    """HTTP接口数据到Excel文件的同步工具"""
+
+    def __init__(self, excel_path: str, sheet_name: str, id_column: str = 'id'):
+        """
+        初始化同步工具
+
+        Args:
+            excel_path: Excel文件路径
+            sheet_name: 目标工作表名称
+            id_column: 用于标识数据行的唯一编号列名
+        """
+        self.excel_path = Path(excel_path)
+        self.sheet_name = sheet_name
+        self.id_column = id_column
+        self.logger = self._setup_logger()
+
+    def _setup_logger(self) -> logging.Logger:
+        """设置日志记录器"""
+        logger = logging.getLogger(__name__)
+        logger.setLevel(logging.INFO)
+
+        if not logger.handlers:
+            handler = logging.StreamHandler()
+            formatter = logging.Formatter(
+                '%(asctime)s - %(levelname)s - %(message)s'
+            )
+            handler.setFormatter(formatter)
+            logger.addHandler(handler)
+
+        return logger
+
+    def fetch_data_from_api(self, url: str, headers: Optional[Dict] = None,
+                            params: Optional[Dict] = None) -> List[Dict[str, Any]]:
+        """
+        从HTTP接口获取数据
+
+        Args:
+            url: API接口URL
+            headers: 请求头
+            params: 请求参数
+
+        Returns:
+            返回数据列表
+        """
+        try:
+            self.logger.info(f"正在从API获取数据: {url}")
+
+            response = requests.get(url, headers=headers, params=params, timeout=30)
+            response.raise_for_status()
+
+            data = response.json()
+
+            # 如果返回的数据是字典且包含列表，尝试提取列表
+            if isinstance(data, dict):
+                # 常见的API响应格式
+                possible_keys = ['data', 'items', 'results', 'list', 'records']
+                for key in possible_keys:
+                    if key in data and isinstance(data[key], list):
+                        data = data[key]
+                        break
+
+            if not isinstance(data, list):
+                raise ValueError("API返回的数据格式不是列表")
+
+            self.logger.info(f"成功获取 {len(data)} 条数据")
+            return data
+
+        except requests.RequestException as e:
+            self.logger.error(f"API请求失败: {e}")
+            raise
+        except Exception as e:
+            self.logger.error(f"数据处理失败: {e}")
+            raise
+
+    def _create_excel_file(self) -> None:
+        """创建新的Excel文件"""
+        self.logger.info(f"创建新的Excel文件: {self.excel_path}")
+
+        # 确保目录存在
+        self.excel_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # 创建新的工作簿
+        workbook = Workbook()
+
+        # 删除默认的工作表，创建指定名称的工作表
+        default_sheet = workbook.active
+        workbook.remove(default_sheet)
+        workbook.create_sheet(self.sheet_name)
+
+        # 保存文件
+        workbook.save(self.excel_path)
+
+    def _load_existing_data(self) -> pd.DataFrame:
+        """加载现有Excel数据"""
+        try:
+            # 尝试读取指定的工作表
+            df = pd.read_excel(self.excel_path, sheet_name=self.sheet_name)
+            self.logger.info(f"成功加载现有数据，共 {len(df)} 行")
+            return df
+        except FileNotFoundError:
+            self.logger.info("Excel文件不存在，将创建新文件")
+            self._create_excel_file()
+            return pd.DataFrame()
+        except ValueError as e:
+            if "Worksheet" in str(e):
+                self.logger.info(f"工作表 '{self.sheet_name}' 不存在，将创建新的工作表")
+                # 文件存在但工作表不存在，创建新工作表
+                with pd.ExcelWriter(self.excel_path, mode='a', if_sheet_exists='new') as writer:
+                    pd.DataFrame().to_excel(writer, sheet_name=self.sheet_name, index=False)
+                return pd.DataFrame()
+            else:
+                raise
+
+    def _compare_records(self, new_record: Dict, existing_record: pd.Series) -> bool:
+        """
+        比较两条记录是否相同
+
+        Args:
+            new_record: 新数据记录
+            existing_record: 现有数据记录
+
+        Returns:
+            如果记录相同返回True，否则返回False
+        """
+        for key, new_value in new_record.items():
+            if key in existing_record.index:
+                existing_value = existing_record[key]
+
+                # 处理NaN值的比较
+                if pd.isna(existing_value) and pd.isna(new_value):
+                    continue
+                elif pd.isna(existing_value) or pd.isna(new_value):
+                    return False
+                elif str(existing_value) != str(new_value):
+                    return False
+
+        return True
+
+    def sync_data_to_excel(self, api_data: List[Dict[str, Any]]) -> Dict[str, int]:
+        """
+        将API数据同步到Excel文件
+
+        Args:
+            api_data: 从API获取的数据列表
+
+        Returns:
+            同步结果统计信息
+        """
+        if not api_data:
+            self.logger.warning("没有数据需要同步")
+            return {'added': 0, 'updated': 0, 'unchanged': 0}
+
+        # 检查ID列是否存在
+        if self.id_column not in api_data[0]:
+            raise ValueError(f"数据中不存在指定的ID列: {self.id_column}")
+
+        # 加载现有数据
+        existing_df = self._load_existing_data()
+
+        # 统计信息
+        stats = {'added': 0, 'updated': 0, 'unchanged': 0}
+
+        # 转换API数据为DataFrame
+        new_df = pd.DataFrame(api_data)
+
+        if existing_df.empty:
+            # 如果没有现有数据，直接写入所有新数据
+            self.logger.info("Excel为空，写入所有新数据")
+            stats['added'] = len(new_df)
+            result_df = new_df
+        else:
+            # 合并数据
+            result_df = existing_df.copy()
+
+            for _, new_record in new_df.iterrows():
+                record_id = new_record[self.id_column]
+
+                # 检查ID是否已存在
+                existing_mask = existing_df[self.id_column] == record_id
+
+                if existing_mask.any():
+                    # 记录已存在，检查是否需要更新
+                    existing_idx = existing_df[existing_mask].index[0]
+                    existing_record = existing_df.loc[existing_idx]
+
+                    if not self._compare_records(new_record.to_dict(), existing_record):
+                        # 数据不同，需要更新
+                        for col in new_record.index:
+                            if col in result_df.columns:
+                                result_df.loc[existing_idx, col] = new_record[col]
+                        stats['updated'] += 1
+                        self.logger.info(f"更新记录 ID: {record_id}")
+                    else:
+                        stats['unchanged'] += 1
+                else:
+                    # 新记录，添加到结果中
+                    # 只添加new_record中存在的列，保留existing_df中的其他列
+                    new_row = {}
+                    for col in result_df.columns:
+                        if col in new_record.index:
+                            new_row[col] = new_record[col]
+                        else:
+                            new_row[col] = None
+
+                    # 如果新记录中有existing_df没有的列，也要添加
+                    for col in new_record.index:
+                        if col not in result_df.columns:
+                            result_df[col] = None
+                            new_row[col] = new_record[col]
+
+                    result_df = pd.concat([result_df, pd.DataFrame([new_row])],
+                                          ignore_index=True)
+                    stats['added'] += 1
+                    self.logger.info(f"添加新记录 ID: {record_id}")
+
+        # 写入Excel文件
+        self._write_to_excel(result_df)
+
+        self.logger.info(f"同步完成 - 新增: {stats['added']}, "
+                         f"更新: {stats['updated']}, 未变更: {stats['unchanged']}")
+
+        return stats
+
+    def _write_to_excel(self, df: pd.DataFrame) -> None:
+        """将DataFrame写入Excel文件"""
+        try:
+            # 如果文件不存在，创建新文件
+            if not self.excel_path.exists():
+                self._create_excel_file()
+
+            # 读取现有文件的所有工作表
+            with pd.ExcelFile(self.excel_path) as excel_file:
+                existing_sheets = excel_file.sheet_names
+
+            # 写入数据
+            with pd.ExcelWriter(self.excel_path, mode='a', if_sheet_exists='replace') as writer:
+                df.to_excel(writer, sheet_name=self.sheet_name, index=False)
+
+            self.logger.info(f"数据已写入Excel文件: {self.excel_path}")
+
+        except Exception as e:
+            self.logger.error(f"写入Excel文件失败: {e}")
+            raise
+
+    def run_sync(self, api_url: str, headers: Optional[Dict] = None,
+                 params: Optional[Dict] = None) -> Dict[str, int]:
+        """
+        执行完整的同步流程
+
+        Args:
+            api_url: API接口URL
+            headers: 请求头
+            params: 请求参数
+
+        Returns:
+            同步结果统计信息
+        """
+        try:
+            # 1. 从API获取数据
+            api_data = self.fetch_data_from_api(api_url, headers, params)
+
+            # 2. 同步数据到Excel
+            stats = self.sync_data_to_excel(api_data)
+
+            return stats
+
+        except Exception as e:
+            self.logger.error(f"同步过程失败: {e}")
+            raise
+
+
+# 使用示例
+def main():
+    """使用示例"""
+
+    # 配置参数
+    config = {
+        'api_url': 'https://api.example.com/data',  # 替换为实际的API URL
+        'excel_path': 'data_sync.xlsx',  # Excel文件路径
+        'sheet_name': 'DataSheet',  # 工作表名称
+        'id_column': 'id',  # ID列名称
+        'headers': {  # 请求头（如果需要）
+            'Authorization': 'Bearer your_token',
+            'Content-Type': 'application/json'
+        },
+        'params': {  # 请求参数（如果需要）
+            'limit': 1000,
+            'offset': 0
+        }
+    }
+
+    # 创建同步工具实例
+    sync_tool = HttpToExcelSync(
+        excel_path=config['excel_path'],
+        sheet_name=config['sheet_name'],
+        id_column=config['id_column']
+    )
+
+    try:
+        # 执行同步
+        stats = sync_tool.run_sync(
+            api_url=config['api_url'],
+            headers=config['headers'],
+            params=config['params']
+        )
+
+        print("同步完成！")
+        print(f"新增记录: {stats['added']}")
+        print(f"更新记录: {stats['updated']}")
+        print(f"未变更记录: {stats['unchanged']}")
+
+    except Exception as e:
+        print(f"同步失败: {e}")
+
+
+# 高级使用示例 - 自定义数据处理
+class CustomHttpToExcelSync(HttpToExcelSync):
+    """扩展版本，支持自定义数据处理"""
+
+    def preprocess_api_data(self, data: List[Dict]) -> List[Dict]:
+        """
+        预处理API数据（可重写此方法来自定义数据处理）
+
+        Args:
+            data: 原始API数据
+
+        Returns:
+            处理后的数据
+        """
+        processed_data = []
+
+        for record in data:
+            # 示例：数据清洗和转换
+            processed_record = {}
+
+            for key, value in record.items():
+                # 清理空白字符
+                if isinstance(value, str):
+                    value = value.strip()
+
+                # 转换特定字段格式
+                if key.endswith('_date') and value:
+                    try:
+                        # 尝试标准化日期格式
+                        from datetime import datetime
+                        if isinstance(value, str):
+                            dt = pd.to_datetime(value)
+                            value = dt.strftime('%Y-%m-%d')
+                    except:
+                        pass
+
+                processed_record[key] = value
+
+            processed_data.append(processed_record)
+
+        return processed_data
+
+    def sync_data_to_excel(self, api_data: List[Dict[str, Any]]) -> Dict[str, int]:
+        """重写同步方法，添加预处理步骤"""
+        # 预处理数据
+        processed_data = self.preprocess_api_data(api_data)
+
+        # 调用父类的同步方法
+        return super().sync_data_to_excel(processed_data)
+
+
+# 批量同步示例
+def batch_sync_example():
+    """批量同步多个数据源的示例"""
+
+    data_sources = [
+        {
+            'name': '用户数据',
+            'api_url': 'https://api.example.com/users',
+            'sheet_name': 'Users',
+            'id_column': 'user_id'
+        },
+        {
+            'name': '订单数据',
+            'api_url': 'https://api.example.com/orders',
+            'sheet_name': 'Orders',
+            'id_column': 'order_id'
+        }
+    ]
+
+    excel_path = 'business_data.xlsx'
+
+    for source in data_sources:
+        print(f"\n正在同步 {source['name']}...")
+
+        sync_tool = HttpToExcelSync(
+            excel_path=excel_path,
+            sheet_name=source['sheet_name'],
+            id_column=source['id_column']
+        )
+
+        try:
+            stats = sync_tool.run_sync(source['api_url'])
+            print(f"{source['name']} 同步完成 - "
+                  f"新增: {stats['added']}, 更新: {stats['updated']}")
+        except Exception as e:
+            print(f"{source['name']} 同步失败: {e}")
+
+
+if __name__ == "__main__":
+    # 运行基本示例
+    main()
+
+    # 或运行批量同步示例
+    # batch_sync_example()
