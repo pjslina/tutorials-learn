@@ -1,0 +1,132 @@
+import os
+import re
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Alignment
+from openpyxl.utils import get_column_letter
+
+
+def convert_value(value):
+    """尝试把字符串数值转换为 int/float，否则保持原值"""
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return value
+    if isinstance(value, str):
+        val = value.strip()
+        # 尝试转 int
+        if re.fullmatch(r"-?\d+", val):
+            return int(val)
+        # 尝试转 float
+        if re.fullmatch(r"-?\d+(\.\d+)?", val):
+            return float(val)
+    return value
+
+
+def get_display_width(value):
+    """估算Excel中字符显示宽度，中文按2个单位宽度，英文和数字按1个"""
+    if value is None:
+        return 0
+    str_val = str(value)
+    width = 0
+    for char in str_val:
+        if re.match(r'[\u4e00-\u9fff]', char):  # 中文字符
+            width += 2
+        else:
+            width += 1
+    return width
+
+
+def write_or_update_excel(filepath, sheetname, listA, key_column_name="编号"):
+    # 如果文件存在，则加载，否则新建
+    if os.path.exists(filepath):
+        wb = load_workbook(filepath)
+        if sheetname in wb.sheetnames:
+            ws = wb[sheetname]
+        else:
+            ws = wb.create_sheet(sheetname)
+    else:
+        wb = Workbook()
+        ws = wb.active
+        ws.title = sheetname
+
+    # 获取表头（列名） -> 如果表是空的，写入列名
+    if ws.max_row == 1 and ws.max_column == 1 and ws.cell(row=1, column=1).value is None:
+        headers = list(listA[0].keys())
+        for col_idx, header in enumerate(headers, start=1):
+            ws.cell(row=1, column=col_idx, value=header)
+    else:
+        headers = [ws.cell(row=1, column=i).value for i in range(1, ws.max_column + 1)]
+
+    # 构建编号 -> 行号的映射（用于后续查找）
+    key_to_row = {}
+    for row_idx in range(2, ws.max_row + 1):
+        key = ws.cell(row=row_idx, column=headers.index(key_column_name) + 1).value
+        if key is not None:
+            key_to_row[key] = row_idx
+
+    # 写入或更新数据
+    for item in listA:
+        key = item.get(key_column_name)
+        if key is None:
+            continue  # 跳过没有编号的数据
+        if key in key_to_row:
+            # 已存在，检查是否需要更新
+            row_idx = key_to_row[key]
+            for col_name, value in item.items():
+                if col_name in headers:
+                    col_idx = headers.index(col_name) + 1
+                    cell_value = ws.cell(row=row_idx, column=col_idx).value
+                    new_value = convert_value(value)
+                    if cell_value != new_value:
+                        ws.cell(row=row_idx, column=col_idx, value=new_value)
+        else:
+            # 新增一行
+            new_row_idx = ws.max_row + 1
+            for col_name in headers:
+                if col_name in item:
+                    col_idx = headers.index(col_name) + 1
+                    ws.cell(row=new_row_idx, column=col_idx, value=convert_value(item[col_name]))
+
+    # ✅ 设置第一行可筛选
+    ws.auto_filter.ref = ws.dimensions
+
+    # ✅ 冻结前两列和第一行
+    ws.freeze_panes = 'C2'  # 冻结前两列（A、B）和第一行
+
+    # ✅ 自动设置列宽（最长内容 + 限制最大宽度）
+    max_width_limit = 5 * 8.43  # 约42
+    min_width = 10  # 设置一个合理的最小宽度
+
+    for col_idx, header in enumerate(headers, start=1):
+        column_letter = get_column_letter(col_idx)
+        max_width = get_display_width(header)
+
+        for row in range(2, ws.max_row + 1):
+            cell_value = ws.cell(row=row, column=col_idx).value
+            width = get_display_width(cell_value)
+            max_width = max(max_width, width)
+
+        adjusted_width = min(max(max_width * 1.2, min_width), max_width_limit)
+        ws.column_dimensions[column_letter].width = adjusted_width
+
+    # 自动换行显示
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+        for cell in row:
+            cell.alignment = Alignment(wrap_text=True)
+
+    # 保存文件
+    wb.save(filepath)
+    print(f"✅ 数据已成功写入或更新：{filepath} 的 sheet《{sheetname}》")
+
+
+# 示例数据
+listA = [
+    {"编号": 1001, "姓名": "张三111111111111111111111111111111111111111111111111", "年龄": "28", "成绩": "56.78"},
+    {"编号": 1002, "姓名": "李四", "年龄": "30", "成绩": "90"},
+    {"编号": 1003, "姓名": "王五", "年龄": "25", "成绩": "67.0"},
+]
+
+file_path = "E:/xml_docs/员工信息.xlsx"
+sheet_name = "员工数据"
+
+write_or_update_excel(file_path, sheet_name, listA)
