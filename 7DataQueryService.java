@@ -1,4 +1,4 @@
-### 6. Êı¾İ²éÑ¯·şÎñ
+### 6. æ•°æ®æŸ¥è¯¢æœåŠ¡
 ```java
 package org.example.service;
 
@@ -10,21 +10,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Êı¾İ²éÑ¯·şÎñ
+ * æ•°æ®æŸ¥è¯¢æœåŠ¡
  */
 @Service
 public class DataQueryService {
 
     /**
-     * ²éÑ¯µÚÒ»Ò³
+     * æŸ¥è¯¢ç¬¬ä¸€é¡µ
      */
     public PageResult<BidsResp> queryFirstPage(int pageSize) {
-        // TODO: ÊµÏÖ¾ßÌåµÄÊı¾İ¿â²éÑ¯Âß¼­
-        // Ê¾Àı£º
+        // TODO: å®ç°å…·ä½“çš„æ•°æ®åº“æŸ¥è¯¢é€»è¾‘
+        // ç¤ºä¾‹ï¼š
         // return yourRepository.findAll(PageRequest.of(0, pageSize));
         
         PageResult<BidsResp> result = new PageResult<>();
-        result.setTotal(1000); // ¼ÙÉè×ÜÊı
+        result.setTotal(1000); // å‡è®¾æ€»æ•°
         result.setPageNum(1);
         result.setPageSize(pageSize);
         result.setData(mockQueryData(1, pageSize));
@@ -33,28 +33,28 @@ public class DataQueryService {
     }
 
     /**
-     * ²éÑ¯Ö¸¶¨Ò³
+     * æŸ¥è¯¢æŒ‡å®šé¡µ
      */
     public List<BidsResp> queryPage(int pageNum, int pageSize) {
-        // TODO: ÊµÏÖ¾ßÌåµÄÊı¾İ¿â²éÑ¯Âß¼­
-        // Ê¾Àı£º
+        // TODO: å®ç°å…·ä½“çš„æ•°æ®åº“æŸ¥è¯¢é€»è¾‘
+        // ç¤ºä¾‹ï¼š
         // return yourRepository.findAll(PageRequest.of(pageNum - 1, pageSize)).getContent();
         
         return mockQueryData(pageNum, pageSize);
     }
 
     /**
-     * Ä£Äâ²éÑ¯Êı¾İ
+     * æ¨¡æ‹ŸæŸ¥è¯¢æ•°æ®
      */
     private List<BidsResp> mockQueryData(int pageNum, int pageSize) {
         List<BidsResp> list = new ArrayList<>();
-        // TODO: Êµ¼Ê²éÑ¯Âß¼­
+        // TODO: å®é™…æŸ¥è¯¢é€»è¾‘
         return list;
     }
 }
 ```
 
-### 7. ÔªÊı¾İ·şÎñ
+### 7. å…ƒæ•°æ®æœåŠ¡
 ```java
 package org.example.service;
 
@@ -67,56 +67,56 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 /**
- * ÔªÊı¾İ·şÎñ - ¸ºÔğ¼ÓÔØºÍ»º´æÔªÊı¾İ
+ * å…ƒæ•°æ®æœåŠ¡ - è´Ÿè´£åŠ è½½å’Œç¼“å­˜å…ƒæ•°æ®
  */
 @Slf4j
 @Service
 public class MetadataService {
 
     /**
-     * ¼ÓÔØ¹ıÂËËùĞèµÄÔªÊı¾İ£¨´ø»º´æ£©
+     * åŠ è½½è¿‡æ»¤æ‰€éœ€çš„å…ƒæ•°æ®ï¼ˆå¸¦ç¼“å­˜ï¼‰
      */
     @Cacheable(value = "filterMetadata", key = "#context.hashCode()")
     public FilterMetadata loadFilterMetadata(ProcessContext context) {
-        log.info("¼ÓÔØ¹ıÂËÔªÊı¾İ...");
+        log.info("åŠ è½½è¿‡æ»¤å…ƒæ•°æ®...");
         
         FilterMetadata metadata = new FilterMetadata();
 
-        // 1. ¼ÓÔØÖ¸±êÓ³Éä¹ØÏµ
+        // 1. åŠ è½½æŒ‡æ ‡æ˜ å°„å…³ç³»
         metadata.setMetricMapping(loadMetricMapping());
 
-        // 2. ¼ÓÔØÓĞĞ§µÄÓò´úÂë
+        // 2. åŠ è½½æœ‰æ•ˆçš„åŸŸä»£ç 
         metadata.setValidDomainCodes(loadValidDomainCodes(context));
 
-        // 3. ¼ÓÔØ×éÖ¯²ã¼¶¹ØÏµ
+        // 3. åŠ è½½ç»„ç»‡å±‚çº§å…³ç³»
         metadata.setOrgHierarchy(loadOrgHierarchy(context));
 
-        // 4. ¼ÓÔØ»ãÂÊĞÅÏ¢£¨Èç¹ûĞèÒª£©
+        // 4. åŠ è½½æ±‡ç‡ä¿¡æ¯ï¼ˆå¦‚æœéœ€è¦ï¼‰
         if (Boolean.TRUE.equals(context.getInputParams().get("isFinancial"))) {
             metadata.setExchangeRates(loadExchangeRates());
         }
 
-        log.info("ÔªÊı¾İ¼ÓÔØÍê³É");
+        log.info("å…ƒæ•°æ®åŠ è½½å®Œæˆ");
         return metadata;
     }
 
     /**
-     * ¼ÓÔØÖ¸±êÓ³Éä¹ØÏµ
+     * åŠ è½½æŒ‡æ ‡æ˜ å°„å…³ç³»
      */
     private Map<String, String> loadMetricMapping() {
-        // TODO: ´ÓÊı¾İ¿â»òÅäÖÃÎÄ¼ş¼ÓÔØ
+        // TODO: ä»æ•°æ®åº“æˆ–é…ç½®æ–‡ä»¶åŠ è½½
         Map<String, String> mapping = new HashMap<>();
-        mapping.put("REVENUE", "ÓªÒµÊÕÈë");
-        mapping.put("PROFIT", "ÀûÈó");
-        mapping.put("COST", "³É±¾");
+        mapping.put("REVENUE", "è¥ä¸šæ”¶å…¥");
+        mapping.put("PROFIT", "åˆ©æ¶¦");
+        mapping.put("COST", "æˆæœ¬");
         return mapping;
     }
 
     /**
-     * ¼ÓÔØÓĞĞ§µÄÓò´úÂë
+     * åŠ è½½æœ‰æ•ˆçš„åŸŸä»£ç 
      */
     private Set<String> loadValidDomainCodes(ProcessContext context) {
-        // TODO: ´ÓÊı¾İ¿â¼ÓÔØ
+        // TODO: ä»æ•°æ®åº“åŠ è½½
         Set<String> codes = new HashSet<>();
         codes.add("FINANCE");
         codes.add("OPERATIONS");
@@ -125,10 +125,10 @@ public class MetadataService {
     }
 
     /**
-     * ¼ÓÔØ×éÖ¯²ã¼¶¹ØÏµ
+     * åŠ è½½ç»„ç»‡å±‚çº§å…³ç³»
      */
     private Map<String, List<String>> loadOrgHierarchy(ProcessContext context) {
-        // TODO: ´ÓÊı¾İ¿â¼ÓÔØ×éÖ¯Ê÷
+        // TODO: ä»æ•°æ®åº“åŠ è½½ç»„ç»‡æ ‘
         Map<String, List<String>> hierarchy = new HashMap<>();
         hierarchy.put("HQ", Arrays.asList("DEPT01", "DEPT02", "DEPT03"));
         hierarchy.put("DEPT01", Arrays.asList("TEAM01", "TEAM02"));
@@ -136,10 +136,10 @@ public class MetadataService {
     }
 
     /**
-     * ¼ÓÔØ»ãÂÊĞÅÏ¢
+     * åŠ è½½æ±‡ç‡ä¿¡æ¯
      */
     private Map<String, Double> loadExchangeRates() {
-        // TODO: ´ÓÍâ²¿API»òÊı¾İ¿â¼ÓÔØÊµÊ±»ãÂÊ
+        // TODO: ä»å¤–éƒ¨APIæˆ–æ•°æ®åº“åŠ è½½å®æ—¶æ±‡ç‡
         Map<String, Double> rates = new HashMap<>();
         rates.put("USD_CNY", 7.2);
         rates.put("EUR_CNY", 7.8);
@@ -149,7 +149,7 @@ public class MetadataService {
 }
 ```
 
-### 8. Controller²ãÊ¹ÓÃÊ¾Àı
+### 8. Controllerå±‚ä½¿ç”¨ç¤ºä¾‹
 ```java
 package org.example.controller;
 
@@ -165,7 +165,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 /**
- * Êı¾İ´¦Àí¿ØÖÆÆ÷
+ * æ•°æ®å¤„ç†æ§åˆ¶å™¨
  */
 @Slf4j
 @RestController
@@ -176,7 +176,7 @@ public class BidsController {
     private OptimizedBidsDataProcessor processor;
 
     /**
-     * ´¦ÀíÊı¾İ - »ù´¡°æ±¾
+     * å¤„ç†æ•°æ® - åŸºç¡€ç‰ˆæœ¬
      */
     @GetMapping("/metrics")
     public ResponseEntity<List<MetricMeasure>> getMetrics(
@@ -189,20 +189,20 @@ public class BidsController {
     }
 
     /**
-     * ´¦ÀíÊı¾İ - ÍêÕû°æ±¾£¨´øËùÓĞ²ÎÊı£©
+     * å¤„ç†æ•°æ® - å®Œæ•´ç‰ˆæœ¬ï¼ˆå¸¦æ‰€æœ‰å‚æ•°ï¼‰
      */
     @PostMapping("/metrics/advanced")
     public ResponseEntity<ProcessResult> getMetricsAdvanced(
             @RequestBody MetricsRequest request) {
         
-        // ¹¹½¨´¦ÀíÉÏÏÂÎÄ
+        // æ„å»ºå¤„ç†ä¸Šä¸‹æ–‡
         ProcessContext context = new ProcessContext()
                 .withPageSize(request.getPageSize())
                 .withRequiredMetricCodes(request.getMetricCodes())
                 .withExcludeOrgCodes(request.getExcludeOrgCodes())
                 .withPeriodRange(request.getStartPeriod(), request.getEndPeriod());
 
-        // Ìí¼Ó¶îÍâ²ÎÊı
+        // æ·»åŠ é¢å¤–å‚æ•°
         if (request.isFinancial()) {
             context.withInputParam("isFinancial", true);
             context.withInputParam("targetCurrency", request.getTargetCurrency());
@@ -216,14 +216,14 @@ public class BidsController {
             context.withInputParam("parentOrgCode", request.getParentOrgCode());
         }
 
-        // Ö´ĞĞ´¦Àí
+        // æ‰§è¡Œå¤„ç†
         ProcessResult result = processor.processData(context);
         
         return ResponseEntity.ok(result);
     }
 
     /**
-     * ÇëÇó²ÎÊı·â×°
+     * è¯·æ±‚å‚æ•°å°è£…
      */
     @lombok.Data
     public static class MetricsRequest {
@@ -240,7 +240,7 @@ public class BidsController {
 }
 ```
 
-### 9. ÅäÖÃÀà
+### 9. é…ç½®ç±»
 ```java
 package org.example.config;
 
@@ -251,7 +251,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
- * Ó¦ÓÃÅäÖÃ
+ * åº”ç”¨é…ç½®
  */
 @Configuration
 @EnableCaching
@@ -259,11 +259,11 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @ComponentScan(basePackages = "org.example")
 public class AppConfig {
 
-    // ¿ÉÒÔÔÚÕâÀïÅäÖÃÆäËûBean
+    // å¯ä»¥åœ¨è¿™é‡Œé…ç½®å…¶ä»–Bean
 }
 ```
 
-### 10. µ¥Ôª²âÊÔÊ¾Àı
+### 10. å•å…ƒæµ‹è¯•ç¤ºä¾‹
 ```java
 package org.example.service;
 
@@ -279,13 +279,13 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * ²ßÂÔ²âÊÔ
+ * ç­–ç•¥æµ‹è¯•
  */
 class FilterStrategyTest {
 
     @Test
     void testMetricCodeFilterStrategy() {
-        // ×¼±¸Êı¾İ
+        // å‡†å¤‡æ•°æ®
         MetricCodeFilterStrategy strategy = new MetricCodeFilterStrategy();
         
         BidsResp resp = new BidsResp();
@@ -299,36 +299,57 @@ class FilterStrategyTest {
         
         FilterMetadata metadata = new FilterMetadata();
         
-        // ²âÊÔ
+        // æµ‹è¯•
         assertTrue(strategy.isApplicable(context));
         assertTrue(strategy.filter(resp, metadata, context));
         
-        // ²âÊÔ²»ÔÚÁĞ±íÖĞµÄÖ¸±ê
+        // æµ‹è¯•ä¸åœ¨åˆ—è¡¨ä¸­çš„æŒ‡æ ‡
         resp.setMetricCode("COST");
         assertFalse(strategy.filter(resp, metadata, context));
     }
 }
 ```
 
-## ·½°¸×Ü½á
+## æ–¹æ¡ˆæ€»ç»“
 
-### ºËĞÄÓÅÊÆ
+### æ ¸å¿ƒä¼˜åŠ¿
 
-1. **²ßÂÔÄ£Ê½µÄÍêÕûÊµÏÖ**
-   - ¶¨ÒåÁËÇåÎúµÄ²ßÂÔ½Ó¿Ú£¨FilterStrategy¡¢TransformStrategy£©
-   - Ã¿¸ö²ßÂÔÖ°Ôğµ¥Ò»£¬Ò×ÓÚÀ©Õ¹
-   - Í¨¹ıStrategyManagerÍ³Ò»¹ÜÀíºÍµ÷¶È
-   - Ö§³Ö²ßÂÔÓÅÏÈ¼¶ºÍ¶¯Ì¬¼¤»î
+1. **ç­–ç•¥æ¨¡å¼çš„å®Œæ•´å®ç°**
+   - å®šä¹‰äº†æ¸…æ™°çš„ç­–ç•¥æ¥å£ï¼ˆFilterStrategyã€TransformStrategyï¼‰
+   - æ¯ä¸ªç­–ç•¥èŒè´£å•ä¸€ï¼Œæ˜“äºæ‰©å±•
+   - é€šè¿‡StrategyManagerç»Ÿä¸€ç®¡ç†å’Œè°ƒåº¦
+   - æ”¯æŒç­–ç•¥ä¼˜å…ˆçº§å’ŒåŠ¨æ€æ¿€æ´»
 
-2. **½¨ÔìÕßÄ£Ê½µÄÓÅÑÅÓ¦ÓÃ**
-   - MetricMeasureBuilderÊµÏÖÏß³Ì°²È«µÄ¹¹½¨
-   - Ö§³ÖÁ´Ê½µ÷ÓÃºÍÅúÁ¿²Ù×÷
-   - Ìá¹©ºÏ²¢¡¢Çå¿ÕµÈ¸ß¼¶¹¦ÄÜ
-   - ·ÀÖ¹ÖØ¸´¹¹½¨
+2. **å»ºé€ è€…æ¨¡å¼çš„ä¼˜é›…åº”ç”¨**
+   - MetricMeasureBuilderå®ç°çº¿ç¨‹å®‰å…¨çš„æ„å»º
+   - æ”¯æŒé“¾å¼è°ƒç”¨å’Œæ‰¹é‡æ“ä½œ
+   - æä¾›åˆå¹¶ã€æ¸…ç©ºç­‰é«˜çº§åŠŸèƒ½
+   - é˜²æ­¢é‡å¤æ„å»º
 
-3. **Á÷Ê½´¦ÀíµÄ¸ßĞ§ÊµÏÖ**
-   - Ê¹ÓÃStream API½øĞĞÊı¾İ´¦Àí
-   - ²¢ĞĞÁ÷ÌáÉı´¦ÀíËÙ¶È
-   - ¼õÉÙÖĞ¼ä¶ÔÏó´´½¨
+3. **æµå¼å¤„ç†çš„é«˜æ•ˆå®ç°**
+   - ä½¿ç”¨Stream APIè¿›è¡Œæ•°æ®å¤„ç†
+   - å¹¶è¡Œæµæå‡å¤„ç†é€Ÿåº¦
+   - å‡å°‘ä¸­é—´å¯¹è±¡åˆ›å»º
 
-4. **¼Ü¹¹ÇåÎú**
+
+4. **æ¶æ„æ¸…æ™°**
+    Controller â†’ Processor â†’ StrategyManager â†’ Strategies
+â†“
+Builder â†’ MetricMeasure
+    5. **æ€§èƒ½ä¼˜åŒ–**
+   - è‡ªå®šä¹‰çº¿ç¨‹æ± 
+   - å…ƒæ•°æ®ä¸€æ¬¡åŠ è½½ï¼Œå¤šçº¿ç¨‹å…±äº«
+   - ConcurrentHashMapä¿è¯çº¿ç¨‹å®‰å…¨
+   - æµå¼å¤„ç†å‡å°‘å†…å­˜å ç”¨
+
+6. **å¯æ‰©å±•æ€§å¼º**
+   - æ–°å¢è¿‡æ»¤è§„åˆ™ï¼šå®ç°FilterStrategyæ¥å£
+   - æ–°å¢è½¬æ¢é€»è¾‘ï¼šå®ç°TransformStrategyæ¥å£
+   - Springè‡ªåŠ¨æ‰«ææ³¨å…¥
+
+7. **å®Œæ•´çš„ç›‘æ§**
+   - ProcessResultæä¾›è¯¦ç»†çš„å¤„ç†ç»Ÿè®¡
+   - è®°å½•æ¿€æ´»çš„ç­–ç•¥
+   - è®°å½•å¤„ç†è€—æ—¶å’Œé”™è¯¯
+
+è¿™ä¸ªæ–¹æ¡ˆå®Œå…¨æ»¡è¶³æ‚¨çš„éœ€æ±‚ï¼Œä¸”æ˜“äºç»´æŠ¤å’Œæ‰©å±•ï¼
