@@ -1,0 +1,124 @@
+-- ==================== 指标元数据表 ====================
+CREATE TABLE metric_metadata (
+    metric_id BIGINT NOT NULL,
+    metric_code VARCHAR(100) NOT NULL,
+    metric_name VARCHAR(200) NOT NULL,
+    metric_name_en VARCHAR(200),
+    metric_type VARCHAR(50),
+    metric_category VARCHAR(100),
+    data_type VARCHAR(50) DEFAULT 'NUMBER',
+    unit VARCHAR(50),
+    description VARCHAR(500),
+    formula TEXT,
+    sort_order INT DEFAULT 0,
+    status CHAR(1) DEFAULT '1',
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    create_by VARCHAR(64),
+    update_by VARCHAR(64),
+    remark VARCHAR(500),
+    CONSTRAINT pk_metric_metadata PRIMARY KEY (metric_id),
+    CONSTRAINT uk_metric_code UNIQUE (metric_code)
+);
+
+-- 创建索引
+CREATE INDEX idx_metric_code ON metric_metadata(metric_code);
+CREATE INDEX idx_metric_type ON metric_metadata(metric_type);
+CREATE INDEX idx_metric_category ON metric_metadata(metric_category);
+CREATE INDEX idx_metric_status ON metric_metadata(status);
+
+-- 字段说明注释
+COMMENT ON TABLE metric_metadata IS '指标元数据表';
+COMMENT ON COLUMN metric_metadata.metric_id IS '指标ID';
+COMMENT ON COLUMN metric_metadata.metric_code IS '指标编码';
+COMMENT ON COLUMN metric_metadata.metric_name IS '指标名称';
+COMMENT ON COLUMN metric_metadata.metric_name_en IS '指标英文名称';
+COMMENT ON COLUMN metric_metadata.metric_type IS '指标类型：BASIC-基础指标，DERIVED-派生指标';
+COMMENT ON COLUMN metric_metadata.metric_category IS '指标分类：FINANCIAL-财务，OPERATIONAL-运营';
+COMMENT ON COLUMN metric_metadata.data_type IS '数据类型：NUMBER-数值，PERCENTAGE-百分比，CURRENCY-货币';
+COMMENT ON COLUMN metric_metadata.unit IS '单位';
+COMMENT ON COLUMN metric_metadata.description IS '指标描述';
+COMMENT ON COLUMN metric_metadata.formula IS '计算公式';
+COMMENT ON COLUMN metric_metadata.sort_order IS '排序序号';
+COMMENT ON COLUMN metric_metadata.status IS '状态：0-停用，1-启用';
+
+-- ==================== 度量元数据表 ====================
+CREATE TABLE measure_metadata (
+    measure_id BIGINT NOT NULL,
+    measure_code VARCHAR(100) NOT NULL,
+    measure_name VARCHAR(200) NOT NULL,
+    measure_name_en VARCHAR(200),
+    measure_type VARCHAR(50),
+    data_format VARCHAR(50),
+    decimal_places INT DEFAULT 2,
+    currency VARCHAR(20),
+    unit VARCHAR(50),
+    description VARCHAR(500),
+    is_key_measure CHAR(1) DEFAULT '0',
+    sort_order INT DEFAULT 0,
+    status CHAR(1) DEFAULT '1',
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    create_by VARCHAR(64),
+    update_by VARCHAR(64),
+    remark VARCHAR(500),
+    CONSTRAINT pk_measure_metadata PRIMARY KEY (measure_id),
+    CONSTRAINT uk_measure_code UNIQUE (measure_code)
+);
+
+-- 创建索引
+CREATE INDEX idx_measure_code ON measure_metadata(measure_code);
+CREATE INDEX idx_measure_type ON measure_metadata(measure_type);
+CREATE INDEX idx_measure_status ON measure_metadata(status);
+
+-- 字段说明注释
+COMMENT ON TABLE measure_metadata IS '度量元数据表';
+COMMENT ON COLUMN measure_metadata.measure_id IS '度量ID';
+COMMENT ON COLUMN measure_metadata.measure_code IS '度量编码';
+COMMENT ON COLUMN measure_metadata.measure_name IS '度量名称';
+COMMENT ON COLUMN measure_metadata.measure_name_en IS '度量英文名称';
+COMMENT ON COLUMN measure_metadata.measure_type IS '度量类型：VALUE-实际值，TARGET-目标值，VARIANCE-差异值';
+COMMENT ON COLUMN measure_metadata.data_format IS '数据格式：0,0.00、0.00%等';
+COMMENT ON COLUMN measure_metadata.decimal_places IS '小数位数';
+COMMENT ON COLUMN measure_metadata.currency IS '货币类型：CNY、USD、EUR';
+COMMENT ON COLUMN measure_metadata.unit IS '单位';
+COMMENT ON COLUMN measure_metadata.is_key_measure IS '是否关键度量：0-否，1-是';
+COMMENT ON COLUMN measure_metadata.sort_order IS '排序序号';
+COMMENT ON COLUMN measure_metadata.status IS '状态：0-停用，1-启用';
+
+-- ==================== 指标度量关联表 ====================
+CREATE TABLE metric_measure_rel (
+    rel_id BIGINT NOT NULL,
+    metric_id BIGINT NOT NULL,
+    measure_id BIGINT NOT NULL,
+    relation_type VARCHAR(50),
+    is_required CHAR(1) DEFAULT '0',
+    display_order INT DEFAULT 0,
+    calculation_rule TEXT,
+    status CHAR(1) DEFAULT '1',
+    create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    create_by VARCHAR(64),
+    update_by VARCHAR(64),
+    remark VARCHAR(500),
+    CONSTRAINT pk_metric_measure_rel PRIMARY KEY (rel_id),
+    CONSTRAINT uk_metric_measure UNIQUE (metric_id, measure_id),
+    CONSTRAINT fk_rel_metric FOREIGN KEY (metric_id) REFERENCES metric_metadata(metric_id),
+    CONSTRAINT fk_rel_measure FOREIGN KEY (measure_id) REFERENCES measure_metadata(measure_id)
+);
+
+-- 创建索引
+CREATE INDEX idx_rel_metric_id ON metric_measure_rel(metric_id);
+CREATE INDEX idx_rel_measure_id ON metric_measure_rel(measure_id);
+CREATE INDEX idx_rel_status ON metric_measure_rel(status);
+
+-- 字段说明注释
+COMMENT ON TABLE metric_measure_rel IS '指标度量关联表';
+COMMENT ON COLUMN metric_measure_rel.rel_id IS '关联ID';
+COMMENT ON COLUMN metric_measure_rel.metric_id IS '指标ID';
+COMMENT ON COLUMN metric_measure_rel.measure_id IS '度量ID';
+COMMENT ON COLUMN metric_measure_rel.relation_type IS '关联类型：PRIMARY-主要，SECONDARY-次要';
+COMMENT ON COLUMN metric_measure_rel.is_required IS '是否必需：0-否，1-是';
+COMMENT ON COLUMN metric_measure_rel.display_order IS '显示顺序';
+COMMENT ON COLUMN metric_measure_rel.calculation_rule IS '计算规则';
+COMMENT ON COLUMN metric_measure_rel.status IS '状态：0-停用，1-启用';

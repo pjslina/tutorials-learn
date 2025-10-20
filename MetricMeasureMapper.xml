@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.MetricMeasureMapper">
+
+    <!-- ==================== ResultMap定义 ==================== -->
+
+    <!-- 度量ResultMap -->
+    <resultMap id="MeasureResultMap" type="com.example.entity.Measure">
+        <id property="measureId" column="measure_id"/>
+        <result property="measureCode" column="measure_code"/>
+        <result property="measureName" column="measure_name"/>
+        <result property="measureNameEn" column="measure_name_en"/>
+        <result property="measureType" column="measure_type"/>
+        <result property="dataFormat" column="data_format"/>
+        <result property="decimalPlaces" column="decimal_places"/>
+        <result property="currency" column="currency"/>
+        <result property="unit" column="measure_unit"/>
+        <result property="description" column="measure_description"/>
+        <result property="isKeyMeasure" column="is_key_measure"/>
+        <result property="sortOrder" column="measure_sort_order"/>
+        <result property="status" column="measure_status"/>
+        <result property="createTime" column="measure_create_time"/>
+        <result property="updateTime" column="measure_update_time"/>
+        <!-- 关联信息 -->
+        <result property="relationType" column="relation_type"/>
+        <result property="isRequired" column="is_required"/>
+        <result property="displayOrder" column="display_order"/>
+        <result property="calculationRule" column="calculation_rule"/>
+    </resultMap>
+
+    <!-- 指标ResultMap（包含度量集合） -->
+    <resultMap id="MetricWithMeasuresResultMap" type="com.example.entity.Metric">
+        <id property="metricId" column="metric_id"/>
+        <result property="metricCode" column="metric_code"/>
+        <result property="metricName" column="metric_name"/>
+        <result property="metricNameEn" column="metric_name_en"/>
+        <result property="metricType" column="metric_type"/>
+        <result property="metricCategory" column="metric_category"/>
+        <result property="dataType" column="data_type"/>
+        <result property="unit" column="metric_unit"/>
+        <result property="description" column="metric_description"/>
+        <result property="formula" column="formula"/>
+        <result property="sortOrder" column="metric_sort_order"/>
+        <result property="status" column="metric_status"/>
+        <result property="createTime" column="metric_create_time"/>
+        <result property="updateTime" column="metric_update_time"/>
+        <!-- 一对多关联 -->
+        <collection property="measures" ofType="com.example.entity.Measure" resultMap="MeasureResultMap"/>
+    </resultMap>
+
+    <!-- 平铺DTO的ResultMap -->
+    <resultMap id="MetricMeasureFlatResultMap" type="com.example.dto.MetricMeasureFlatDTO">
+        <!-- 指标字段 -->
+        <result property="metricId" column="metric_id"/>
+        <result property="metricCode" column="metric_code"/>
+        <result property="metricName" column="metric_name"/>
+        <result property="metricNameEn" column="metric_name_en"/>
+        <result property="metricType" column="metric_type"/>
+        <result property="metricCategory" column="metric_category"/>
+        <result property="metricDataType" column="data_type"/>
+        <result property="metricUnit" column="metric_unit"/>
+        <result property="metricDescription" column="metric_description"/>
+        <!-- 度量字段 -->
+        <result property="measureId" column="measure_id"/>
+        <result property="measureCode" column="measure_code"/>
+        <result property="measureName" column="measure_name"/>
+        <result property="measureNameEn" column="measure_name_en"/>
+        <result property="measureType" column="measure_type"/>
+        <result property="dataFormat" column="data_format"/>
+        <result property="decimalPlaces" column="decimal_places"/>
+        <result property="currency" column="currency"/>
+        <result property="measureUnit" column="measure_unit"/>
+        <result property="measureDescription" column="measure_description"/>
+        <result property="isKeyMeasure" column="is_key_measure"/>
+        <!-- 关联字段 -->
+        <result property="relationType" column="relation_type"/>
+        <result property="isRequired" column="is_required"/>
+        <result property="displayOrder" column="display_order"/>
+        <result property="calculationRule" column="calculation_rule"/>
+    </resultMap>
+
+    <!-- ==================== SQL片段 ==================== -->
+
+    <!-- 指标表字段 -->
+    <sql id="MetricColumns">
+        mm.metric_id,
+        mm.metric_code,
+        mm.metric_name,
+        mm.metric_name_en,
+        mm.metric_type,
+        mm.metric_category,
+        mm.data_type,
+        mm.unit AS metric_unit,
+        mm.description AS metric_description,
+        mm.formula,
+        mm.sort_order AS metric_sort_order,
+        mm.status AS metric_status,
+        mm.create_time AS metric_create_time,
+        mm.update_time AS metric_update_time
+    </sql>
+
+    <!-- 度量表字段 -->
+    <sql id="MeasureColumns">
+        msm.measure_id,
+        msm.measure_code,
+        msm.measure_name,
+        msm.measure_name_en,
+        msm.measure_type,
+        msm.data_format,
+        msm.decimal_places,
+        msm.currency,
+        msm.unit AS measure_unit,
+        msm.description AS measure_description,
+        msm.is_key_measure,
+        msm.sort_order AS measure_sort_order,
+        msm.status AS measure_status,
+        msm.create_time AS measure_create_time,
+        msm.update_time AS measure_update_time
+    </sql>
+
+    <!-- 关联表字段 -->
+    <sql id="RelationColumns">
+        mmr.relation_type,
+        mmr.is_required,
+        mmr.display_order,
+        mmr.calculation_rule
+    </sql>
+
+    <!-- ==================== 查询语句 ==================== -->
+
+    <!-- 1. 查询指标及其关联的度量列表（嵌套结构） -->
+    <select id="selectMetricsWithMeasures" resultMap="MetricWithMeasuresResultMap">
+        SELECT
+            <include refid="MetricColumns"/>,
+            <include refid="MeasureColumns"/>,
+            <include refid="RelationColumns"/>
+        FROM metric_metadata mm
+        LEFT JOIN metric_measure_rel mmr ON mm.metric_id = mmr.metric_id AND mmr.status = '1'
+        LEFT JOIN measure_metadata msm ON mmr.measure_id = msm.measure_id AND msm.status = '1'
+        WHERE mm.status = '1'
+        <if test="metricIds != null and metricIds.size() > 0">
+            AND mm.metric_id IN
+            <foreach collection="metricIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="status != null and status != ''">
+            AND mm.status = #{status}
+        </if>
+        ORDER BY mm.sort_order, mm.metric_id, mmr.display_order, msm.sort_order
+    </select>
+
+    <!-- 2. 查询单个指标及其关联的度量列表 -->
+    <select id="selectMetricWithMeasuresById" resultMap="MetricWithMeasuresResultMap">
+        SELECT
+            <include refid="MetricColumns"/>,
+            <include refid="MeasureColumns"/>,
+            <include refid="RelationColumns"/>
+        FROM metric_metadata mm
+        LEFT JOIN metric_measure_rel mmr ON mm.metric_id = mmr.metric_id AND mmr.status = '1'
+        LEFT JOIN measure_metadata msm ON mmr.measure_id = msm.measure_id AND msm.status = '1'
+        WHERE mm.metric_id = #{metricId}
+          AND mm.status = '1'
+        ORDER BY mmr.display_order, msm.sort_order
+    </select>
+
+    <!-- 3. 查询指标度量平铺数据 -->
+    <select id="selectMetricMeasureFlat" resultMap="MetricMeasureFlatResultMap">
+        SELECT
+            <include refid="MetricColumns"/>,
+            <include refid="MeasureColumns"/>,
+            <include refid="RelationColumns"/>
+        FROM metric_metadata mm
+        INNER JOIN metric_measure_rel mmr ON mm.metric_id = mmr.metric_id
+        INNER JOIN measure_metadata msm ON mmr.measure_id = msm.measure_id
+        WHERE mm.status = '1'
+          AND mmr.status = '1'
+          AND msm.status = '1'
+        <if test="metricIds != null and metricIds.size() > 0">
+            AND mm.metric_id IN
+            <foreach collection="metricIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="measureIds != null and measureIds.size() > 0">
+            AND msm.measure_id IN
+            <foreach collection="measureIds" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="status != null and status != ''">
+            AND mm.status = #{status}
+            AND msm.status = #{status}
+        </if>
+        ORDER BY mm.sort_order, mm.metric_id, mmr.display_order, msm.sort_order
+    </select>
+
+    <!-- 4. 根据指标类型查询 -->
+    <select id="selectMetricsByType" resultMap="MetricWithMeasuresResultMap">
+        SELECT
+            <include refid="MetricColumns"/>,
+            <include refid="MeasureColumns"/>,
+            <include refid="RelationColumns"/>
+        FROM metric_metadata mm
+        LEFT JOIN metric_measure_rel mmr ON mm.metric_id = mmr.metric_id AND mmr.status = '1'
+        LEFT JOIN measure_metadata msm ON mmr.measure_id = msm.measure_id AND msm.status = '1'
+        WHERE mm.status = '1'
+          AND mm.metric_type = #{metricType}
+        ORDER BY mm.sort_order, mm.metric_id, mmr.display_order, msm.sort_order
+    </select>
+
+    <!-- 5. 根据度量类型查询平铺数据 -->
+    <select id="selectFlatByMeasureType" resultMap="MetricMeasureFlatResultMap">
+        SELECT
+            <include refid="MetricColumns"/>,
+            <include refid="MeasureColumns"/>,
+            <include refid="RelationColumns"/>
+        FROM metric_metadata mm
+        INNER JOIN metric_measure_rel mmr ON mm.metric_id = mmr.metric_id
+        INNER JOIN measure_metadata msm ON mmr.measure_id = msm.measure_id
+        WHERE mm.status = '1'
+          AND mmr.status = '1'
+          AND msm.status = '1'
+          AND msm.measure_type = #{measureType}
+        ORDER BY mm.sort_order, mm.metric_id, mmr.display_order, msm.sort_order
+    </select>
+
+    <!-- 6. 查询关键度量的指标 -->
+    <select id="selectMetricsWithKeyMeasures" resultMap="MetricWithMeasuresResultMap">
+        SELECT
+            <include refid="MetricColumns"/>,
+            <include refid="MeasureColumns"/>,
+            <include refid="RelationColumns"/>
+        FROM metric_metadata mm
+        INNER JOIN metric_measure_rel mmr ON mm.metric_id = mmr.metric_id
+        INNER JOIN measure_metadata msm ON mmr.measure_id = msm.measure_id
+        WHERE mm.status = '1'
+          AND mmr.status = '1'
+          AND msm.status = '1'
+          AND msm.is_key_measure = '1'
+        ORDER BY mm.sort_order, mm.metric_id, mmr.display_order, msm.sort_order
+    </select>
+
+</mapper>

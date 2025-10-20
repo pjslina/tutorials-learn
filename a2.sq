@@ -1,0 +1,43 @@
+-- ==================== 插入测试数据 ====================
+
+-- 插入指标数据
+INSERT INTO metric_metadata (metric_id, metric_code, metric_name, metric_name_en, metric_type, metric_category, data_type, unit, description, sort_order, status) VALUES
+(1001, 'REVENUE', '营业收入', 'Revenue', 'BASIC', 'FINANCIAL', 'CURRENCY', '元', '企业在一定时期内销售商品或提供劳务所获得的收入', 1, '1'),
+(1002, 'PROFIT', '净利润', 'Net Profit', 'DERIVED', 'FINANCIAL', 'CURRENCY', '元', '企业当期利润总额减去所得税后的金额', 2, '1'),
+(1003, 'GROWTH_RATE', '增长率', 'Growth Rate', 'DERIVED', 'FINANCIAL', 'PERCENTAGE', '%', '反映企业发展速度的动态指标', 3, '1'),
+(1004, 'EMPLOYEE_COUNT', '员工数量', 'Employee Count', 'BASIC', 'OPERATIONAL', 'NUMBER', '人', '企业当前在职员工总数', 4, '1'),
+(1005, 'CUSTOMER_SATISFACTION', '客户满意度', 'Customer Satisfaction', 'BASIC', 'OPERATIONAL', 'PERCENTAGE', '%', '客户对产品或服务的满意程度', 5, '1');
+
+-- 插入度量数据
+INSERT INTO measure_metadata (measure_id, measure_code, measure_name, measure_name_en, measure_type, data_format, decimal_places, currency, unit, is_key_measure, sort_order, status) VALUES
+(2001, 'ACTUAL_VALUE', '实际值', 'Actual Value', 'VALUE', '0,0.00', 2, 'CNY', '元', '1', 1, '1'),
+(2002, 'TARGET_VALUE', '目标值', 'Target Value', 'TARGET', '0,0.00', 2, 'CNY', '元', '0', 2, '1'),
+(2003, 'LAST_YEAR_VALUE', '去年同期', 'Last Year Value', 'VALUE', '0,0.00', 2, 'CNY', '元', '0', 3, '1'),
+(2004, 'VARIANCE', '差异值', 'Variance', 'VARIANCE', '0,0.00', 2, 'CNY', '元', '0', 4, '1'),
+(2005, 'VARIANCE_RATE', '差异率', 'Variance Rate', 'VARIANCE', '0.00%', 2, NULL, '%', '1', 5, '1'),
+(2006, 'YOY_GROWTH', '同比增长', 'YoY Growth', 'VALUE', '0.00%', 2, NULL, '%', '1', 6, '1'),
+(2007, 'COMPLETION_RATE', '完成率', 'Completion Rate', 'VALUE', '0.00%', 2, NULL, '%', '1', 7, '1');
+
+-- 插入关联关系
+INSERT INTO metric_measure_rel (rel_id, metric_id, measure_id, relation_type, is_required, display_order, status) VALUES
+-- 营业收入的度量
+(3001, 1001, 2001, 'PRIMARY', '1', 1, '1'),
+(3002, 1001, 2002, 'SECONDARY', '0', 2, '1'),
+(3003, 1001, 2003, 'SECONDARY', '0', 3, '1'),
+(3004, 1001, 2004, 'SECONDARY', '0', 4, '1'),
+(3005, 1001, 2007, 'SECONDARY', '0', 5, '1'),
+-- 净利润的度量
+(3006, 1002, 2001, 'PRIMARY', '1', 1, '1'),
+(3007, 1002, 2002, 'SECONDARY', '0', 2, '1'),
+(3008, 1002, 2006, 'SECONDARY', '0', 3, '1'),
+-- 增长率的度量
+(3009, 1003, 2005, 'PRIMARY', '1', 1, '1'),
+(3010, 1003, 2006, 'SECONDARY', '0', 2, '1'),
+-- 员工数量的度量
+(3011, 1004, 2001, 'PRIMARY', '1', 1, '1'),
+(3012, 1004, 2003, 'SECONDARY', '0', 2, '1'),
+-- 客户满意度的度量
+(3013, 1005, 2001, 'PRIMARY', '1', 1, '1'),
+(3014, 1005, 2002, 'SECONDARY', '0', 2, '1');
+
+COMMIT;
